@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DietaryRestriction {
+  Vegetarian
+  GlutenFree
+  Paleo
+  Vegan
+}
+
+model Diner {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  restrictions DietaryRestriction[]
+  reservations Reservation[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "diners")
+}
+
+model Restaurant {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  tables       Table[]
+  reservations Reservation[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "restaurants")
+}
+
+model Table {
+  id       Int @id @default(autoincrement())
+  capacity Int
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int        @map(name: "restaurant_id")
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "tables")
+}
+
+model Reservation {
+  id        Int      @id @default(autoincrement())
+  startTime DateTime @map(name: "start_time")
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int        @map(name: "restaurant_id")
+
+  diners Diner[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "reservations")
+}
