@@ -1,0 +1,12 @@
+{
+  "extends":"@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "jest"],
+    "module": "Node16",
+    "sourceMap": true,
+    "paths": {
+      "@db/*": ["./src/db/*"],
+      "@api/*": ["./src/api/*"]
+    }
+  }
+}

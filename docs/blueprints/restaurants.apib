@@ -1,0 +1,40 @@
+# Restaurants API
+
+**Base URL**: `localhost:4000/v1/app`
+
+---
+
+## Group Restaurants
+
+### Search Restaurants [GET /restaurants{?diners,time}]
+
+Returns a list of restaurants filtered by diner restrictions and time.
+
++ Parameters
+    + diners (array[number]) - A comma-separated list of diner IDs representing specific restrictions/preferences. Example: `?diners=1,2,3`.
+    + time (string, required) - Unix timestamp (in seconds) used to filter restaurants based on reservation availability. Example: `?time=1733844600`.
+
++ Request Example: `?diners=1,2,3&time=1733844600`
+
+    + Parameters
+        + diners: `1,2,3` (array[number]) - A list of diner IDs for filtering.
+        + time: `1733844600` (string) - Unix timestamp.
+
++ Response 200 (application/json)
+
+    ```json
+    {
+        "restaurants": [
+            {
+                "id": 2,
+                "name": "Panaderia Rosetta",
+                "endorsements": [
+                    "GlutenFree",
+                    "Vegetarian"
+                ],
+                "createdAt": "2024-12-13T18:33:55.569Z",
+                "updatedAt": "2024-12-13T18:33:55.569Z"
+            }
+        ]
+    }
+    ```

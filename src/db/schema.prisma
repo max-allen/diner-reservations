@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output = "../../docs/outputs/erd.svg"
+  theme = "forest"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DietaryRestriction {
+  Vegetarian
+  GlutenFree
+  Paleo
+  Vegan
+}
+
+model Diner {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  restrictions DietaryRestriction[]
+  reservations DinerReservations[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "diners")
+}
+
+model Restaurant {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  tables       Table[]
+  reservations Reservation[]
+  endorsements DietaryRestriction[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "restaurants")
+}
+
+model Table {
+  id       Int @id @default(autoincrement())
+  capacity Int
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int        @map(name: "restaurant_id")
+
+  reservations Reservation[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "tables")
+}
+
+model Reservation {
+  id        Int      @id @default(autoincrement())
+  startTime DateTime @map(name: "start_time")
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int        @map(name: "restaurant_id")
+
+  table Table @relation(fields: [tableId], references: [id])
+  tableId Int        @map(name: "table_id")
+
+  diners DinerReservations[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "reservations")
+}
+
+model DinerReservations {
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+
+  diner Diner @relation(fields: [dinerId], references: [id])
+  dinerId Int
+
+  @@id([reservationId, dinerId])
+}
