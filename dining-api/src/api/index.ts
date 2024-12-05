@@ -4,7 +4,10 @@ import morgan from 'morgan'
 import { PrismaClient } from '@prisma/client'
 import appRouter from '../api/app'
 
-export default (server: express.Application, dbClient: PrismaClient): express.Application => {
+export default (
+  server: express.Application,
+  dbClient: PrismaClient
+): express.Application => {
   const APP_MIDDLEWARE = {
     logging: morgan('dev'),
     jsonParser: express.json(),

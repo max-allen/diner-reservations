@@ -14,21 +14,23 @@ export default class DinersController {
     try {
       const resource = await this.dbClient.create({ data })
       res.json(resource)
-    } catch(err) {
+    } catch (err) {
       next(err)
     }
   }
 
   async read(req: Request, res: Response, next: NextFunction) {
-    const { params: { id } } = req
+    const {
+      params: { id }
+    } = req
     const queryMethod = id
-      ? () => this.dbClient.findUnique({ where: { id: parseInt(id)} })
+      ? () => this.dbClient.findUnique({ where: { id: parseInt(id) } })
       : this.dbClient.findMany
 
     try {
       const resource = await queryMethod()
       res.json(resource)
-    } catch(err) {
+    } catch (err) {
       next(err)
     }
   }

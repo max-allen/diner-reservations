@@ -6,7 +6,8 @@ export default (dbClient: PrismaClient) => {
   const dinersController = new DinersController(dbClient.diner)
   const router = Router()
 
-  router.route('/')
+  router
+    .route('/')
     .get((...handlerArgs) => dinersController.read(...handlerArgs))
     .post((...handlerArgs) => dinersController.create(...handlerArgs))
 

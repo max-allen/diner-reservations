@@ -11,10 +11,9 @@ const initializeServer = () => {
   const server = express()
 
   const configuredServer = configureRoutes(server, dbClient)
-    configuredServer.listen(SERVER_PORT, () => {
+  configuredServer.listen(SERVER_PORT, () => {
     console.log(`Server listening on port ${SERVER_PORT} 🎧`)
   })
 }
 
 initializeServer()
-
