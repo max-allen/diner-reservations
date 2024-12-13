@@ -14,45 +14,51 @@ export default class RestaurantsController {
         query: { diners: dinerQuery, time: timeQuery }
       } = req
 
-      const diners = await this.dinersController.getDinersById(
-        dinerQuery as unknown as number[],
-        {
-          restrictions: true
-        }
-      )
-
-      const restrictions = _uniq(diners.flatMap((diner) => diner.restrictions))
-
-      const stringifiedTimeQuery = timeQuery as unknown as string
-      const timeQueryAsDate = fromUnixTime(parseInt(stringifiedTimeQuery))
-
-      const restaurants = await this.dbClient.restaurant.findMany({
-        where: {
-          endorsements: {
-            hasEvery: restrictions
-          },
-          tables: {
-            some: {
-              capacity: { gte: diners.length }
-            }
-          },
-          reservations: {
-            none: {
-              AND: [
-                {
-                  startTime: { gte: subHours(timeQueryAsDate, 2) }
-                },
-                {
-                  startTime: { lte: addHours(timeQueryAsDate, 2) }
-                }
-              ]
-            }
-          }
-        }
+      const restaurants = await this.findAvailableRestaurants({
+        dinerQuery: dinerQuery as unknown as number[],
+        timeQuery: timeQuery as string
       })
-      res.json(restaurants)
+
+      res.json({ restaurants })
     } catch (err) {
       next(err)
     }
+  }
+
+  async findAvailableRestaurants(queryArgs: {
+    diners: number[]
+    time: string
+  }) {
+    const diners = await this.dinersController.getDinersById(queryArgs.diners, {
+      restrictions: true
+    })
+
+    const restrictions = _uniq(diners.flatMap((diner) => diner.restrictions))
+    const timeQueryAsDate = fromUnixTime(parseInt(queryArgs.time))
+
+    return this.dbClient.restaurant.findMany({
+      where: {
+        endorsements: {
+          hasEvery: restrictions
+        },
+        tables: {
+          some: {
+            capacity: { gte: diners.length }
+          }
+        },
+        reservations: {
+          none: {
+            AND: [
+              {
+                startTime: { gte: subHours(timeQueryAsDate, 2) }
+              },
+              {
+                startTime: { lte: addHours(timeQueryAsDate, 2) }
+              }
+            ]
+          }
+        }
+      }
+    })
   }
 }

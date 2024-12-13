@@ -13,7 +13,7 @@ const modifyDinerQueryArgs = (
       query: { diners: queryArgs }
     } = req
 
-    req.query.diners = mapStingfiedArgsToNumeric(queryArgs as unknown as string)
+    req.query.diners = mapStingfiedArgsToNumeric(queryArgs)
   }
   next()
 }

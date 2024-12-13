@@ -14,13 +14,17 @@ export default class DinersController {
     }
   }
 
-  async show(req: Request, res: Response, next: NextFunction) {
+  async show(
+    req: Request<any, any, any, any>,
+    res: Response,
+    next: NextFunction
+  ) {
     const {
       query: { diners: dinerQuery }
     } = req
 
     try {
-      const diners = await this.getDinersById(dinerQuery as unknown as number[])
+      const diners = await this.getDinersById(dinerQuery)
       res.json({ diners })
     } catch (e) {
       next(e)
