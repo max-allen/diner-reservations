@@ -1,16 +1,14 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
-import dinersRouter from './diners/router'
+import { dinerRouter, dinerMiddleware } from './diners'
+import restaurantsRouter from './restaurants/router'
 
-const APP_ROUTES = {
-  diners: dinersRouter
-}
+const appRouter = express.Router()
 
-export default (dbClient: PrismaClient) => {
-  const appRouter = express.Router()
-  Object.entries(APP_ROUTES).forEach(([routeName, router]) => {
-    appRouter.use(`/${routeName}`, router(dbClient))
-  })
+appRouter.use((req, res, next) => {
+  dinerMiddleware.modifyDinerQueryArgs(req, res, next)
+})
 
-  return appRouter
-}
+appRouter.use('/diners', dinerRouter)
+appRouter.use('/restaurants', restaurantsRouter)
+
+export default appRouter
