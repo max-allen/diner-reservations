@@ -1,12 +1,12 @@
-import DinersController from './controller'
+import ReservationsController from './controller'
 import { Router } from 'express'
 
-const dinersController = new DinersController()
+const reservationsController = new ReservationsController()
 const router = Router()
 
 router
   .route('/')
-  .get((...handlerArgs) => dinersController.index(...handlerArgs))
+  .post((...handlerArgs) => reservationsController.post(...handlerArgs))
 
 router.use((req, res, next) => {
   next(res.status(404).send(new Error(`${req.url} not found`)))

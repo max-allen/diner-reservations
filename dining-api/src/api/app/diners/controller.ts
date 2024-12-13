@@ -1,37 +1,45 @@
-import { Prisma } from '@prisma/client'
+import { DatabaseClient } from '../../../db/utils'
 import { Request, Response, NextFunction } from 'express'
+import { Prisma } from '@prisma/client'
 
 export default class DinersController {
-  dbClient: Prisma.DinerDelegate
+  dbClient = DatabaseClient.getInstance()
 
-  constructor(dbClient: Prisma.DinerDelegate) {
-    this.dbClient = dbClient
-  }
-
-  async create(req: Request, res: Response, next: NextFunction) {
-    const { body: data } = req
-
+  async index(req: Request, res: Response, next: NextFunction) {
     try {
-      const resource = await this.dbClient.create({ data })
-      res.json(resource)
+      const diners = await this.dbClient.diner.findMany()
+      res.json(diners)
     } catch (err) {
       next(err)
     }
   }
 
-  async read(req: Request, res: Response, next: NextFunction) {
+  async show(req: Request, res: Response, next: NextFunction) {
     const {
-      params: { id }
+      query: { diners: dinerQuery }
     } = req
-    const queryMethod = id
-      ? () => this.dbClient.findUnique({ where: { id: parseInt(id) } })
-      : this.dbClient.findMany
 
     try {
-      const resource = await queryMethod()
-      res.json(resource)
-    } catch (err) {
-      next(err)
+      const diners = await this.getDinersById(dinerQuery as unknown as number[])
+      res.json({ diners })
+    } catch (e) {
+      next(e)
     }
+  }
+
+  async getDinersById(
+    dinerIds: number[],
+    selectFields: Prisma.DinerSelect = {}
+  ) {
+    return this.dbClient.diner.findMany({
+      where: {
+        id: {
+          in: dinerIds
+        }
+      },
+      select: {
+        ...selectFields
+      }
+    })
   }
 }

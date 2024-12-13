@@ -4,13 +4,13 @@ dotenv.config()
 const { SERVER_PORT } = process.env
 import express from 'express'
 import configureRoutes from './api'
-import { PrismaClient } from '@prisma/client'
+import { DatabaseClient } from './db/utils'
 
 const initializeServer = () => {
-  const dbClient = new PrismaClient()
+  DatabaseClient.getInstance()
   const server = express()
 
-  const configuredServer = configureRoutes(server, dbClient)
+  const configuredServer = configureRoutes(server)
   configuredServer.listen(SERVER_PORT, () => {
     console.log(`Server listening on port ${SERVER_PORT} 🎧`)
   })
