@@ -20,7 +20,7 @@ model Diner {
   name String
 
   restrictions DietaryRestriction[]
-  reservations Reservation[]
+  reservations DinerReservations[]
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
@@ -67,10 +67,20 @@ model Reservation {
   table Table @relation(fields: [tableId], references: [id])
   tableId Int        @map(name: "table_id")
 
-  diners Diner[]
+  diners DinerReservations[]
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   @@map(name: "reservations")
+}
+
+model DinerReservations {
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+
+  diner Diner @relation(fields: [dinerId], references: [id])
+  dinerId Int
+
+  @@id([reservationId, dinerId])
 }

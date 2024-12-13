@@ -11,48 +11,60 @@ export default class RestaurantsController {
   async index(req: Request, res: Response, next: NextFunction) {
     try {
       const {
-        query: { diners: dinerQuery, time: timeQuery }
+        query: { diners: diners, time: time }
       } = req
 
-      const diners = await this.dinersController.getDinersById(
-        dinerQuery as unknown as number[],
-        {
-          restrictions: true
-        }
-      )
-
-      const restrictions = _uniq(diners.flatMap((diner) => diner.restrictions))
-
-      const stringifiedTimeQuery = timeQuery as unknown as string
-      const timeQueryAsDate = fromUnixTime(parseInt(stringifiedTimeQuery))
-
-      const restaurants = await this.dbClient.restaurant.findMany({
-        where: {
-          endorsements: {
-            hasEvery: restrictions
-          },
-          tables: {
-            some: {
-              capacity: { gte: diners.length }
-            }
-          },
-          reservations: {
-            none: {
-              AND: [
-                {
-                  startTime: { gte: subHours(timeQueryAsDate, 2) }
-                },
-                {
-                  startTime: { lte: addHours(timeQueryAsDate, 2) }
-                }
-              ]
-            }
-          }
-        }
+      const restaurants = await this.findAvailableRestaurants({
+        diners: diners as unknown as number[],
+        time: time as string
       })
-      res.json(restaurants)
+
+      res.json({ restaurants })
     } catch (err) {
       next(err)
     }
+  }
+
+  async findAvailableRestaurants(
+    queryArgs: {
+      diners: number[]
+      time: string
+    },
+    includeTables = false
+  ) {
+    const diners = await this.dinersController.getDinersById(queryArgs.diners, {
+      restrictions: true
+    })
+
+    const restrictions = _uniq(diners.flatMap((diner) => diner.restrictions))
+    const timeAsDate = fromUnixTime(parseInt(queryArgs.time))
+
+    return this.dbClient.restaurant.findMany({
+      include: {
+        tables: includeTables
+      },
+      where: {
+        endorsements: {
+          hasEvery: restrictions
+        },
+        tables: {
+          some: {
+            capacity: { gte: diners.length }
+          }
+        },
+        reservations: {
+          none: {
+            AND: [
+              {
+                startTime: { gte: subHours(timeAsDate, 2) }
+              },
+              {
+                startTime: { lte: addHours(timeAsDate, 2) }
+              }
+            ]
+          }
+        }
+      }
+    })
   }
 }

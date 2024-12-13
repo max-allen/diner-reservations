@@ -14,19 +14,6 @@ export default class DinersController {
     }
   }
 
-  async show(req: Request, res: Response, next: NextFunction) {
-    const {
-      query: { diners: dinerQuery }
-    } = req
-
-    try {
-      const diners = await this.getDinersById(dinerQuery as unknown as number[])
-      res.json({ diners })
-    } catch (e) {
-      next(e)
-    }
-  }
-
   async getDinersById(
     dinerIds: number[],
     selectFields: Prisma.DinerSelect = {}

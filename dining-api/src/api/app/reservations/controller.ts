@@ -1,57 +1,51 @@
-import { DatabaseClient } from '@db/utils'
-import { PrismaClient, DietaryRestriction, Diner } from '@prisma/client'
+import { DatabaseClient } from '../../../db/utils'
 import { Request, Response, NextFunction } from 'express'
-import { fromUnixTime, addHours, subHours } from 'date-fns'
+import { fromUnixTime } from 'date-fns'
 
 export default class ReservationsController {
   dbClient = DatabaseClient.getInstance()
 
-  async post(
+  async index(_: Request, res: Response, next: NextFunction) {
+    try {
+      const reservations = await this.dbClient.reservation.findMany()
+      res.json({ reservations })
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  async create(
     req: Request<
       any,
+      { time: string; tableId: number; restaurantId: number },
       any,
-      { diners: Diner['id'][]; startTime: number; restaurant: number }
+      any
     >,
     res: Response,
     next: NextFunction
   ) {
+    const { time, tableId, restaurantId } = req.body
+
     try {
-      const {
-        body: { diners: dinerIds, startTime, restaurant: restaurantId }
-      } = req
-
-      const diners = await this.dbClient.diner.findMany({
-        where: {
-          id: {
-            in: dinerIds
+      const reservation = await this.dbClient.reservation.create({
+        data: {
+          startTime: fromUnixTime(parseInt(time)),
+          restaurant: {
+            connect: {
+              id: restaurantId
+            }
+          },
+          table: {
+            connect: {
+              id: tableId
+            }
           }
-        },
-        select: {
-          restrictions: true
         }
       })
 
-      const restrictions = [
-        ...new Set(
-          diners
-            .map((diner: { restrictions: DietaryRestriction[] }) =>
-              Object.values(diner).flat()
-            )
-            .flat()
-        )
-      ]
-
-      const restaurant = await this.dbClient.restaurant.findUnique({
-        where: {
-          id: restaurantId
-        }
-      })
-
-      // if (!restaurant?.endorsements.)
-
-      // res.json(reservations)
-    } catch (err) {
-      next(err)
+      res.json({ reservation })
+    } catch (e) {
+      next(e)
     }
   }
 }
