@@ -14,7 +14,7 @@ services:
       - SERVER_PORT=4000
       - DATABASE_URL=postgres://postgres:password@db:5432/pg-dining
     command: >
-      sh -c "npm run start"
+      sh -c "npm run clean && npm run start"
     depends_on:
       - db
 
@@ -29,6 +29,6 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/clean-db.sql
 volumes:
   pg_data:
