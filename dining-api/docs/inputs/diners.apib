@@ -1,0 +1,73 @@
+# Diners API
+
+**Base URL** is `localhost:4000/v1/app`
+
+---
+
+## Group Diners
+Endpoints for managing diners.
+
+### Get All Diners [GET /diners]
+Retrieve a list of all diners.
+
+**NOTE**: Assuming you haven't modified the db, this will return seeded diners (see example below).
+I used when manually testing basic functionality of db in controlled post-seed state.
+
++ Response 200 (application/json)
+    + Body
+        [
+    {
+        "id": 1,
+        "name": "Michael",
+        "restrictions": [
+            "Vegetarian"
+        ],
+        "createdAt": "2024-12-13T18:33:55.493Z",
+        "updatedAt": "2024-12-13T18:33:55.493Z"
+    },
+    {
+        "id": 2,
+        "name": "George Michael",
+        "restrictions": [
+            "Vegetarian",
+            "GlutenFree"
+        ],
+        "createdAt": "2024-12-13T18:33:55.564Z",
+        "updatedAt": "2024-12-13T18:33:55.564Z"
+    },
+    {
+        "id": 3,
+        "name": "Lucile",
+        "restrictions": [
+            "GlutenFree"
+        ],
+        "createdAt": "2024-12-13T18:33:55.565Z",
+        "updatedAt": "2024-12-13T18:33:55.565Z"
+    },
+    {
+        "id": 4,
+        "name": "Gob",
+        "restrictions": [
+            "Paleo"
+        ],
+        "createdAt": "2024-12-13T18:33:55.566Z",
+        "updatedAt": "2024-12-13T18:33:55.566Z"
+    },
+    {
+        "id": 5,
+        "name": "Tobias",
+        "restrictions": [],
+        "createdAt": "2024-12-13T18:33:55.566Z",
+        "updatedAt": "2024-12-13T18:33:55.566Z"
+    },
+    {
+        "id": 6,
+        "name": "Maeby",
+        "restrictions": [
+            "Vegan"
+        ],
+        "createdAt": "2024-12-13T18:33:55.567Z",
+        "updatedAt": "2024-12-13T18:33:55.567Z"
+    }
+]
+---
