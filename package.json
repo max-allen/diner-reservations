@@ -1,5 +1,5 @@
 {
-  "name": "dining-api",
+  "name": "nelo-booking-api",
   "version": "1.0.0",
   "description": "a restaurant booking api",
   "main": "index.ts",

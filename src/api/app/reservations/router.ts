@@ -7,6 +7,7 @@ const router = Router()
 
 router
   .route('/')
+  .get((...handlerArgs) => reservationsController.index(...handlerArgs))
   .post(validateAndAppendResult, (...handlerArgs) =>
     reservationsController.create(...handlerArgs)
   )
